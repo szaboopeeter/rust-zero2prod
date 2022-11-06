@@ -27,6 +27,18 @@ reqwest = "0.11"
 # unnecessary dependencies for projects that do not need it.
 serde = { version = "1", features = ["derive"]}
 
+[dependencies.sqlx]
+version = "0.5.7"
+default-features = false
+features = [
+    "runtime-actix-rustls",
+    "macros",
+    "postgres",
+    "uuid",
+    "chrono",
+    "migrate"
+]
+
 # On MacOS, `brew install michaeleisel/zld/zld`
 [target.x86_64-apple-darwin]
 rustflags = ["-C", "link-arg=-fuse-ld=/usr/local/bin/zld"]
