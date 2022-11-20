@@ -1,13 +1,37 @@
 //! /src/routes/subscriptions.rs
 
+use chrono::Utc;
+use uuid::Uuid;
 use actix_web::{web, HttpResponse};
-use sqlx::PgConnection;
+use sqlx::PgPool;
 
 pub async fn subscribe(
-    _form: web::Form<FormData>,
-    _connection: web::Data<PgConnection>
+    form: web::Form<FormData>,
+    pool: web::Data<PgPool>
 ) -> HttpResponse {
-    HttpResponse::Ok().finish()
+    // `Result` has two variants: `Ok` and `Err`.
+    // The first for successes, the second for failures.
+    // We use a `match` statement to choose what to do based 
+    // on the outcome.
+    match sqlx::query!(
+        r#"
+        INSERT INTO subscriptions (id, email, name, subscribed_at)
+        VALUES ($1, $2, $3, $4)
+        "#,
+        Uuid::new_v4(),
+        form.email,
+        form.name,
+        Utc::now()
+    )
+    .execute(pool.as_ref())
+    .await 
+    {
+        Ok(_) => HttpResponse::Ok().finish(),
+        Err(e) => {
+            println!("Failed to execute query: {}", e);
+            HttpResponse::InternalServerError().finish()
+        }
+    }
 }
 
 #[derive(serde::Deserialize)]
