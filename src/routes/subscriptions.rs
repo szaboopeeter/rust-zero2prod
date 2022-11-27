@@ -28,7 +28,7 @@ pub async fn subscribe(
     .await 
     {
         Ok(_) =>{ 
-            log::info!("New subscriber details have been saved");
+            log::info!("Adding '{}' '{}' as a new subscriber", form.email, form.name);
             HttpResponse::Ok().finish()
         },
         Err(e) => {
